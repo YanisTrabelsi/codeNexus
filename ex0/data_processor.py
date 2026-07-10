@@ -28,8 +28,8 @@ class NumericProcessor(DataProcessor):
         super().__init__()
 
     def validate(self, data: Any) -> bool:
-        is_int: bool = type(data) is int
-        is_float: bool = isinstance(data, (int, bool))
+        is_int: bool = type(data) is int and type(data) is not bool
+        is_float: bool = type(data) is float and type(data) is not bool
         is_list: bool = type(data) is list
         if (is_list):
             is_list = all(isinstance(i, (int, float)) and not
@@ -98,97 +98,98 @@ class LogProcessor(DataProcessor):
         self.storage.append(data)
 
 
-num: NumericProcessor = NumericProcessor()
-text: TextProcessor = TextProcessor()
-log: LogProcessor = LogProcessor()
-valid_data: dict[str, Any] = {
-    'num0': 1,
-    'num1': 2,
-    'num2': 4.2,
-    'num3': [42, 2.4, -3],
-    'text0': "hello",
-    'text1': "Louka",
-    'text2': ["ca", "va"],
-    'log0': {'log level': "NOTICE",
-             'log message': "Connection to server"},
-    'log1': [{'log level': "NOTICE",
-              'log message': "Connection to server"},
-             {'log level': "ERROR",
-              'log message': "Unauthorized access!!"}]
-}
-invalid_data: dict[str, Any] = {
-    'num0': "hello",
-    'num1': [42, False],
-    'text0': 42,
-    'text1': ["ca", True],
-    'log0': {'log level': 42,
-             'log message': "Connection to server"},
-    'log1': [{'log level': "NOTICE",
-              'log message': True},
-             {'log level': "ERROR",
-              'log message': "Unauthorized access!!"}]
-}
+if (__name__ == "__main__"):
+    num: NumericProcessor = NumericProcessor()
+    text: TextProcessor = TextProcessor()
+    log: LogProcessor = LogProcessor()
+    v_data: dict[str, Any] = {
+        'num0': 1,
+        'num1': 2,
+        'num2': 4.2,
+        'num3': [42, 2.4, -3],
+        'text0': "hello",
+        'text1': "Louka",
+        'text2': ["ca", "va"],
+        'log0': {'log level': "NOTICE",
+                 'log message': "Connection to server"},
+        'log1': [{'log level': "NOTICE",
+                  'log message': "Connection to server"},
+                 {'log level': "ERROR",
+                  'log message': "Unauthorized access!!"}]
+    }
+    inv_data: dict[str, Any] = {
+        'num0': "hello",
+        'num1': [42, False],
+        'text0': 42,
+        'text1': ["ca", True],
+        'log0': {'log level': 42,
+                 'log message': "Connection to server"},
+        'log1': [{'log level': "NOTICE",
+                  'log message': True},
+                 {'log level': "ERROR",
+                  'log message': "Unauthorized access!!"}]
+    }
 
-print("=== Code Nexus - Data Processor ===\n")
+    print("=== Code Nexus - Data Processor ===\n")
 
-# NUMERIC
-print("TESTING NUMERIC PROCESSOR")
-for i in range(4):
-    print(f"Trying to validate input '{valid_data[f'num{i}']}': ", end="")
-    print(num.validate(valid_data[f"num{i}"]))
-for i in range(2):
-    print(f"Trying to validate input '{invalid_data[f'num{i}']}': ", end="")
-    print(num.validate(invalid_data[f"num{i}"]))
-print('-' * 15)
+    # NUMERIC
+    print("TESTING NUMERIC PROCESSOR")
+    for i in range(4):
+        print(f"Trying to validate input '{v_data[f'num{i}']}': ", end="")
+        print(num.validate(v_data[f"num{i}"]))
+    for i in range(2):
+        print(f"Trying to validate input '{inv_data[f'num{i}']}': ", end="")
+        print(num.validate(inv_data[f"num{i}"]))
+    print('-' * 15)
 
-# TEXT
-print("TESTING TEXT PROCESSOR")
-for i in range(3):
-    print(f"Trying to validate input '{valid_data[f'text{i}']}': ", end="")
-    print(text.validate(valid_data[f"text{i}"]))
-for i in range(2):
-    print(f"Trying to validate input '{invalid_data[f'text{i}']}': ", end="")
-    print(text.validate(invalid_data[f"text{i}"]))
-print('-' * 15)
+    # TEXT
+    print("TESTING TEXT PROCESSOR")
+    for i in range(3):
+        print(f"Trying to validate input '{v_data[f'text{i}']}': ", end="")
+        print(text.validate(v_data[f"text{i}"]))
+    for i in range(2):
+        print(f"Trying to validate input '{inv_data[f'text{i}']}': ", end="")
+        print(text.validate(inv_data[f"text{i}"]))
+    print('-' * 15)
 
-# LOG
-print("TESTING LOG PROCESSOR")
-for i in range(2):
-    print(f"Trying to validate input '{valid_data[f'log{i}']}': ", end="")
-    print(log.validate(valid_data[f"log{i}"]))
-for i in range(2):
-    print(f"Trying to validate input '{invalid_data[f'log{i}']}': ", end="")
-    print(log.validate(invalid_data[f"log{i}"]))
+    # LOG
+    print("TESTING LOG PROCESSOR")
+    for i in range(2):
+        print(f"Trying to validate input '{v_data[f'log{i}']}': ", end="")
+        print(log.validate(v_data[f"log{i}"]))
+    for i in range(2):
+        print(f"Trying to validate input '{inv_data[f'log{i}']}': ", end="")
+        print(log.validate(inv_data[f"log{i}"]))
 
-print("\n\nTESTING INGEST WITH INVALID DATA")
-try:
-    num.ingest(invalid_data["num0"])
-except ValueError as e:
-    print(f"ValueError with input '{invalid_data['num0']}': {e}")
-try:
-    text.ingest(invalid_data["text0"])
-except ValueError as e:
-    print(f"ValueError with input '{invalid_data['text0']}': {e}")
-try:
-    text.ingest(invalid_data["log0"])
-except ValueError as e:
-    print(f"ValueError with input '{invalid_data['log0']}': {e}")
+    print("\n\nTESTING INGEST WITH INVALID DATA")
+    try:
+        num.ingest(inv_data["num0"])
+    except ValueError as e:
+        print(f"ValueError with input '{inv_data['num0']}': {e}")
+    try:
+        text.ingest(inv_data["text0"])
+    except ValueError as e:
+        print(f"ValueError with input '{inv_data['text0']}': {e}")
+    try:
+        text.ingest(inv_data["log0"])
+    except ValueError as e:
+        print(f"ValueError with input '{inv_data['log0']}': {e}")
 
-print("\n\nTESTING OUTPUT INGEST DATA")
-print(f"Processing data: {valid_data['num3']}")
-num.ingest(valid_data['num3'])
-print("Extracting 2 value...")
-output: tuple[int, str] = (0, "")
-for i in range(2):
-    output = num.output()
-    print(f"Numeric value {output[0]}: {output[1]}")
-print(f"\nProcessing data: {valid_data['text0']}")
-text.ingest(valid_data['text0'])
-print("Extracting 1 value...")
-output = text.output()
-print(f"Text value {output[0]}: {output[1]}")
-print(f"\nProcessing data: {valid_data['log1']}")
-log.ingest(valid_data['log1'])
-print("Extracting 1 value...")
-output = log.output()
-print(f"Log value {output[0]}: {output[1]}")
+    print("\n\nTESTING OUTPUT INGEST DATA")
+    print(f"Processing data: {v_data['num3']}")
+    num.ingest(v_data['num3'])
+    print("Extracting 2 value...")
+    output: tuple[int, str] = (0, "")
+    for i in range(2):
+        output = num.output()
+        print(f"Numeric value {output[0]}: {output[1]}")
+    print(f"\nProcessing data: {v_data['text0']}")
+    text.ingest(v_data['text0'])
+    print("Extracting 1 value...")
+    output = text.output()
+    print(f"Text value {output[0]}: {output[1]}")
+    print(f"\nProcessing data: {v_data['log1']}")
+    log.ingest(v_data['log1'])
+    print("Extracting 1 value...")
+    output = log.output()
+    print(f"Log value {output[0]}: {output[1]}")
