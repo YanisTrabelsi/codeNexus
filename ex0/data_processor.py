@@ -91,11 +91,20 @@ class LogProcessor(DataProcessor):
     def ingest(self, data: dict[str, str] | list[dict[str, str]]) -> None:
         if (not self.validate(data)):
             raise ValueError("Improper log data")
-        if (type(data) is list):
+        str1: str = ""
+        str2: str = ""
+        concat: str = ""
+        if (isinstance(data, list)):
             for i in data:
-                self.storage.append(i)
+                str1 = i[list(i.keys())[0]]
+                str2 = i[list(i.keys())[1]]
+                concat = ": ".join([str1, str2])
+                self.storage.append(concat)
             return
-        self.storage.append(data)
+        str1 = data[list(data.keys())[0]]
+        str2 = data[list(data.keys())[1]]
+        concat = ": ".join([str1, str2])
+        self.storage.append(concat)
 
 
 if (__name__ == "__main__"):
@@ -189,7 +198,12 @@ if (__name__ == "__main__"):
     output = text.output()
     print(f"Text value {output[0]}: {output[1]}")
     print(f"\nProcessing data: {v_data['log1']}")
+    log.ingest(v_data['log0'])
     log.ingest(v_data['log1'])
     print("Extracting 1 value...")
     output = log.output()
+    output2 = log.output()
     print(f"Log value {output[0]}: {output[1]}")
+    print(f"Log value {output2[0]}: {output2[1]}")
+    output2 = log.output()
+    print(f"Log value {output2[0]}: {output2[1]}")
