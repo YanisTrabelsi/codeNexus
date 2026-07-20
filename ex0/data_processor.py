@@ -79,12 +79,13 @@ class LogProcessor(DataProcessor):
         is_dict: bool = type(data) is dict
         if (is_dict):
             is_dict = all(isinstance(k, str) and isinstance(v, str)
-                          for k, v in data.items())
+                          for k, v in data.items()) and len(data) == 2
         is_list: bool = type(data) is list
         if (is_list):
             is_list = all(all(isinstance(k, str) and isinstance(v, str)
-                          for k, v in i.items()) for i in data)
-        if (is_dict or is_list):
+                          for k, v in i.items()) and len(i) == 2
+                          for i in data)
+        if ((is_dict or is_list)):
             return (True)
         return (False)
 
